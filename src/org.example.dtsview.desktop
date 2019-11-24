@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+
+Name=dtsview
+GenericName=DTS Viewer/parser
+Icon=dtsview
+
+Exec=dtsview
+StartupWMClass=dtsview

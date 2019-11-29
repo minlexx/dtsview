@@ -33,16 +33,20 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-#include <libfdt_env.h>
-#include <fdt.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "libfdt_env.h"
+#include "fdt.h"
 
 #include "util.h"
 
-#ifdef DEBUG
-#define debug(...)	printf(__VA_ARGS__)
-#else
-#define debug(...)
-#endif
+//#ifdef DEBUG
+//#define debug(...)	printf(__VA_ARGS__)
+//#else
+//#define debug(...)
+//#endif
 
 #define DEFAULT_FDT_VERSION	17
 
@@ -246,7 +250,7 @@ struct reserve_info *build_reserve_entry(uint64_t start, uint64_t len);
 struct reserve_info *chain_reserve_entry(struct reserve_info *first,
 					 struct reserve_info *list);
 struct reserve_info *add_reserve_entry(struct reserve_info *list,
-				       struct reserve_info *new);
+                       struct reserve_info *newp);
 
 
 struct dt_info {
@@ -289,5 +293,9 @@ struct dt_info *dt_from_source(const char *f);
 /* FS trees */
 
 struct dt_info *dt_from_fs(const char *dirname);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* DTC_H */

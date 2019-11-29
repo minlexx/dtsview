@@ -94,13 +94,13 @@ struct data data_copy_file(FILE *f, size_t maxlen)
 {
 	struct data d = empty_data;
 
-	while (!feof(f) && (d.len < maxlen)) {
+    while (!feof(f) && ((size_t)(d.len) < maxlen)) {
 		size_t chunksize, ret;
 
-		if (maxlen == -1)
+        if (maxlen == (size_t)-1)
 			chunksize = 4096;
 		else
-			chunksize = maxlen - d.len;
+            chunksize = maxlen - (size_t)d.len;
 
 		d = data_grow_for(d, chunksize);
 		ret = fread(d.val + d.len, 1, chunksize, f);

@@ -32,7 +32,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include "libfdt.h"
+#include "libfdt_env.h"
+#include "fdt.h"
 #include "util.h"
 #include "version_gen.h"
 
@@ -297,10 +298,11 @@ char *utilfdt_read(const char *filename)
 int utilfdt_write_err(const char *filename, const void *blob)
 {
 	int fd = 1;	/* assume stdout */
-	int totalsize;
-	int offset;
+//	int totalsize;
+//	int offset;
 	int ret = 0;
-	const char *ptr = blob;
+//	const char *ptr = blob;
+    (void)blob; // unused parameter
 
 	if (strcmp(filename, "-") != 0) {
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
@@ -308,17 +310,18 @@ int utilfdt_write_err(const char *filename, const void *blob)
 			return errno;
 	}
 
-	totalsize = fdt_totalsize(blob);
-	offset = 0;
+//	totalsize = fdt_totalsize(blob);
+//	offset = 0;
 
-	while (offset < totalsize) {
-		ret = write(fd, ptr + offset, totalsize - offset);
-		if (ret < 0) {
-			ret = -errno;
-			break;
-		}
-		offset += ret;
-	}
+//	while (offset < totalsize) {
+//		ret = write(fd, ptr + offset, totalsize - offset);
+//		if (ret < 0) {
+//			ret = -errno;
+//			break;
+//		}
+//		offset += ret;
+//	}
+
 	/* Close the file/stdin; return errno on error */
 	if (fd != 1)
 		close(fd);

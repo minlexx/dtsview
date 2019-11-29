@@ -27,6 +27,7 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __GNUC__
 #define PRINTF(i, j)	__attribute__((format (printf, i, j)))
@@ -54,22 +55,22 @@ static inline void NORETURN PRINTF(1, 2) die(const char *str, ...)
 
 static inline void *xmalloc(size_t len)
 {
-	void *new = malloc(len);
+    void *newp = malloc(len);
 
-	if (!new)
+    if (!newp)
 		die("malloc() failed\n");
 
-	return new;
+    return newp;
 }
 
 static inline void *xrealloc(void *p, size_t len)
 {
-	void *new = realloc(p, len);
+    void *newp = realloc(p, len);
 
-	if (!new)
+    if (!newp)
 		die("realloc() failed (len=%zd)\n", len);
 
-	return new;
+    return newp;
 }
 
 extern char *xstrdup(const char *s);

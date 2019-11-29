@@ -42,6 +42,11 @@ target_link_libraries(dtsview
     Qt5::Widgets
 )
 
+target_compile_definitions(dtsview PRIVATE
+    YYDEBUG
+    YYERROR_VERBOSE
+)
+
 install(TARGETS dtsview ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 install(PROGRAMS org.example.dtsview.desktop DESTINATION ${KDE_INSTALL_APPDIR})
 install(FILES org.example.dtsview.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})

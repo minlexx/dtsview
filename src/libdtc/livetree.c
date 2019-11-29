@@ -358,19 +358,19 @@ struct reserve_info *chain_reserve_entry(struct reserve_info *first,
 }
 
 struct reserve_info *add_reserve_entry(struct reserve_info *list,
-				      struct reserve_info *new)
+                      struct reserve_info *newp)
 {
 	struct reserve_info *last;
 
-	new->next = NULL;
+    newp->next = NULL;
 
 	if (! list)
-		return new;
+        return newp;
 
 	for (last = list; last->next; last = last->next)
 		;
 
-	last->next = new;
+    last->next = newp;
 
 	return list;
 }

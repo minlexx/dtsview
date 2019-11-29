@@ -21,7 +21,10 @@
 #include "dtsviewwindow.h"
 #include <QDebug>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QProcess>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 
 #include "libdtc/dtc.h"
 
@@ -32,7 +35,8 @@ DTSViewWindow::DTSViewWindow()
     setCentralWidget(widget);
     m_ui.setupUi(widget);
 
-    m_ui.treeWidget->setColumnCount(1);
+    m_ui.treeWidget->setColumnCount(2);
+    m_ui.treeWidget->setHeaderLabels(QStringList{"prop", "value"});
 
     QObject::connect(m_ui.btn_browse, &QPushButton::clicked,
                      this, &DTSViewWindow::onBtnBrowseClicked);
@@ -100,10 +104,42 @@ gcc -E -Wp,-MD,arch/arm64/boot/dts/marvell/.armada-3720-espressobin.dtb.d.pre.tm
     qDebug() << Q_FUNC_INFO << "gcc arguments:";
     qDebug() << arguments;
 
-    //QProcess *p = new QProcess();
     int ret = QProcess::execute(QStringLiteral("gcc"), arguments);
     qDebug() << "gcc exec result:" << ret;
     return (ret == 0);
+}
+
+static void fillNodes(struct node *dt, QTreeWidget *treeWidget, QTreeWidgetItem *parent)
+{
+    if (!dt) return;
+
+    QTreeWidgetItem *it = new QTreeWidgetItem();
+    it->setText(0, QString::fromUtf8(dt->name));
+
+    // properties
+    struct property *prop = dt->proplist;
+    while (prop) {
+        QTreeWidgetItem *propItem = new QTreeWidgetItem();
+        if (prop->deleted) {
+            propItem->setText(0, QStringLiteral("(deleted) ") + QString::fromUtf8(prop->name));
+        } else {
+            propItem->setText(0, QString::fromUtf8(prop->name));
+        }
+        if (prop->val.val)
+            propItem->setText(1, QString::fromUtf8(prop->val.val));
+        else
+            propItem->setText(1, QString::asprintf("len: %d", prop->val.len));
+        prop = prop->next;
+    }
+
+    // recurse children
+    struct node *child = dt->children;
+    while (child) {
+        fillNodes(child, treeWidget, it);
+        child = child->next_sibling;
+    }
+
+    parent->addChild(it);
 }
 
 void DTSViewWindow::onBtnBrowseClicked()
@@ -137,6 +173,30 @@ void DTSViewWindow::onBtnBrowseClicked()
         qWarning() << "parser failed?";
         return;
     }
+
+    QTreeWidgetItem *rootItem = new QTreeWidgetItem();
+    rootItem->setText(0, QStringLiteral("devicetree"));
+    rootItem->setText(1, QString());
+    m_ui.treeWidget->clear();
+    m_ui.treeWidget->addTopLevelItem(rootItem);
+
+    QTreeWidgetItem *tiBootCpu = new QTreeWidgetItem();
+    tiBootCpu->setText(0, QStringLiteral("boot_cpuid_phys"));
+    tiBootCpu->setText(1, QString::number(devicetree->boot_cpuid_phys, 10));
+    rootItem->addChild(tiBootCpu);
+
+    struct reserve_info *ri = devicetree->reservelist;
+    while (ri) {
+        QTreeWidgetItem *tiReserveInfo = new QTreeWidgetItem();
+        tiReserveInfo->setText(0, QStringLiteral("reserve_info"));
+        tiReserveInfo->setText(1, QString::asprintf("<%08lX, %08lX>", ri->address, ri->size));
+        // TODO: also add labels..?
+        rootItem->addChild(tiReserveInfo);
+        ri = ri->next;
+    }
+
+    // add all child nodes
+    fillNodes(devicetree->dt, m_ui.treeWidget, rootItem);
 
     qDebug() << devicetree->dt->name;
 }

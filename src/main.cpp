@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     parser.process(application);
     aboutData.processCommandLine(&parser);
 
-    dtsviewWindow *mainWindow = new dtsviewWindow;
+    DTSViewWindow *mainWindow = new DTSViewWindow();
     mainWindow->show();
 
     return application.exec();

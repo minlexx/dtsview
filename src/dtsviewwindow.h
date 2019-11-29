@@ -30,27 +30,26 @@
  * This class serves as the main window for dtsview.  It handles the
  * menus, toolbars and status bars.
  *
- * @short Main window class
- * @author %{AUTHOR} <%{EMAIL}>
- * @version %{VERSION}
  */
-class dtsviewWindow : public QMainWindow
+class DTSViewWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    /**
-     * Default Constructor
-     */
-    dtsviewWindow();
+    DTSViewWindow();
+    ~DTSViewWindow() override;
 
-    /**
-     * Default Destructor
-     */
-    ~dtsviewWindow() override;
+public slots:
+    void onBtnBrowseClicked();
+
+protected:
+    QString findKernelDir();
+    bool runGccPreprocess();
+
+    QString m_dtsFileName;
+    QString m_kernelDir;
+    QString m_preprocessedDtsFileName;
 
 private:
-    // this is the name of the root widget inside our Ui file
-    // you can rename it in designer and then change it here
     Ui::mainWidget m_ui;
 };
 
